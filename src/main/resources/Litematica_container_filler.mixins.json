@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.mimicenzymes.litematicafiller.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "SearchItemMixin"
+  ],
+  "client": [
+    "ClientPlayNetworkHandlerMixin",
+    "GuiMainMenuMixin",
+    "MixinBlockEntity",
+    "MixinCrafterBlockEntity",
+    "MixinGuiMaterialList",
+    "MixinLootableContainerBlockEntity",
+    "ScreenInterceptorMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

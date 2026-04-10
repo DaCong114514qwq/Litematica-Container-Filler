@@ -4,6 +4,7 @@ import com.mimicenzymes.litematicafiller.config.ConfigHandler;
 import com.mimicenzymes.litematicafiller.config.Configs;
 import com.mimicenzymes.litematicafiller.config.GuiConfigs;
 import com.mimicenzymes.litematicafiller.core.*;
+import com.mimicenzymes.litematicafiller.dependency.DependencyChecker;
 import com.mimicenzymes.litematicafiller.input.InputHandler;
 import com.mimicenzymes.litematicafiller.network.RemoteInventoryPacket;
 import com.mimicenzymes.litematicafiller.network.RemoteInventoryResponsePacket;
@@ -51,7 +52,9 @@ public class LitematicafillerClient implements ClientModInitializer {
         });
 
 // 初始化打印机内存库
-        PrinterMemoryManager.ensureInitialized();
+        if (DependencyChecker.HAS_PRINTER && DependencyChecker.HAS_CHEST_TRACKER) {
+            PrinterMemoryManager.ensureInitialized();
+        }
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!isGuiAutoRegistered) {

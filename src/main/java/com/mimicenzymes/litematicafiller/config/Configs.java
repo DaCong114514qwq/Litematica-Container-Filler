@@ -70,7 +70,9 @@ public class Configs {
         builder.add(HIGHLIGHT_COLOR_UNFILLED, HIGHLIGHT_COLOR_PARTIAL, HIGHLIGHT_COLOR_OVERFILLED,
                 HIGHLIGHT_COLOR_WRONG, HIGHLIGHT_COLOR_SATISFIED, HIGHLIGHT_COLOR_UNKNOWN);
 
-        builder.add(ENABLE_REMOTE_FETCH, AUTO_FETCH_FROM_PRINTER_MEMORY);
+        if (DependencyChecker.HAS_PRINTER && DependencyChecker.HAS_CHEST_TRACKER) {
+            builder.add(ENABLE_REMOTE_FETCH, AUTO_FETCH_FROM_PRINTER_MEMORY);
+        }
 
         OPTIONS = builder.build();
     }

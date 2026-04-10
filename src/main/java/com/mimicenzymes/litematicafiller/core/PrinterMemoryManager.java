@@ -1,5 +1,6 @@
 package com.mimicenzymes.litematicafiller.core;
 
+import com.mimicenzymes.litematicafiller.dependency.DependencyChecker;
 import red.jackf.chesttracker.impl.memory.MemoryBankImpl;
 import java.lang.reflect.Field;
 

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "litematica_container_filler",
+  "version": "0.9",
+  "name": "投影容器填充机",
+  "description": "自动投影容器填充模组",
+  "authors": ["MimicEnzymes"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/litematica_container_filler/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.mimicenzymes.litematicafiller.LitematicafillerClient"
+    ],
+    "modmenu": [
+      "com.mimicenzymes.litematicafiller.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "Litematica_container_filler.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.4",
+    "minecraft": "${minecraft_dependency}",
+    "java": ">=21",
+    "malilib": "*",
+    "litematica": "*"
+  },
+  "suggests": {
+    "quickshulker": "*",
+    "modmenu": "*",
+    "litematica-printer": "*",
+    "chesttracker": "*",
+    "whereisit": "*"
+  }
+}

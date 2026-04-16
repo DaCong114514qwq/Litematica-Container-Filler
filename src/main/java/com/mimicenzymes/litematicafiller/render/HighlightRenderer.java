@@ -2,6 +2,7 @@ package com.mimicenzymes.litematicafiller.render;
 
 import com.mimicenzymes.litematicafiller.config.Configs;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Map;
@@ -27,6 +28,7 @@ public class HighlightRenderer {
     public static HighlightRenderer getInstance() {
         return INSTANCE;
     }
+    MinecraftClient client = MinecraftClient.getInstance();
 
     //#if MC > 12104
     // 1.21.10 版本：无参方法
@@ -51,69 +53,26 @@ public class HighlightRenderer {
                             : MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_OFFSET_2);
 
             var buffer = ctx.getBuilder();
-            if (buffer == null)
-                return;
+            if (buffer == null) return;
+
+            float lineWidth = Math.max(2.5F, (float)client.getWindow().getFramebufferWidth() / 1920.0F * 2.5F);
 
             for (Map.Entry<BlockPos, HighlightState> entry : highlights.entrySet()) {
                 Color4f c = getColor(entry.getValue());
-                //#if MC <= 12110
-                //$$ RenderUtils.drawBlockBoundingBoxOutlinesBatchedLinesSimple(entry.getKey(), c, 0.005, buffer);
-                //#else
-                MinecraftClient client = MinecraftClient.getInstance();
-                float lineWidth = client != null ? Math.max(2.5F, (float)client.getWindow().getFramebufferWidth() / 1920.0F * 2.5F) : 2.0f;
+                //#if MC > 12110
                 RenderUtils.drawBlockBoundingBoxOutlinesBatchedLinesSimple(entry.getKey(), c, 0.015, lineWidth, buffer);
+                //#else
+                //$$ RenderUtils.drawBlockBoundingBoxOutlinesBatchedLinesSimple(entry.getKey(), c, 0.015, buffer);
                 //#endif
             }
-
-            Object meshData = null;
-            for (java.lang.reflect.Method m : buffer.getClass().getMethods()) {
-                if (m.getParameterCount() == 0 && m.getReturnType() != void.class) {
-                    String name = m.getName();
-                    String retName = m.getReturnType().getSimpleName();
-
-                    if (name.equals("build") || name.equals("end") || name.equals("endNullable")
-                            || name.equals("buildOrThrow")
-                            || name.equals("method_43428") || name.equals("method_60800")
-                            || retName.contains("Mesh") || retName.contains("Built")) {
-
-                        try {
-                            m.setAccessible(true);
-                            Object result = m.invoke(buffer);
-                            if (result != null) {
-                                meshData = result;
-                                break;
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    }
-                }
-            }
-
+            BuiltBuffer meshData = buffer.endNullable();
             if (meshData != null) {
-                for (java.lang.reflect.Method m : ctx.getClass().getMethods()) {
-                    if (m.getName().equals("draw") && m.getParameterCount() == 3) {
-                        Class<?>[] params = m.getParameterTypes();
-                        if (params[0].isInstance(meshData) && params[1] == boolean.class
-                                && params[2] == boolean.class) {
-                            m.invoke(ctx, meshData, false, true);
-                            break;
-                        }
-                    }
-                }
-
-                for (java.lang.reflect.Method m : meshData.getClass().getMethods()) {
-                    if ((m.getName().equals("close") || m.getName().equals("method_43429"))
-                            && m.getParameterCount() == 0) {
-                        m.invoke(meshData);
-                        break;
-                    }
-                }
+                ctx.draw(meshData, false, true);
+                meshData.close();
             }
-
             ctx.reset();
 
         } catch (Throwable e) {
-            MinecraftClient client = MinecraftClient.getInstance();
             if (client.player != null && client.world != null) {
                 if (client.world.getTime() % 60 == 0) {
                     client.player.sendMessage(net.minecraft.text.Text.literal("§c[容器填充机] 渲染错误: " + e.getMessage()),
